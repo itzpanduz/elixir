@@ -1,0 +1,14 @@
+# PyCharm
+.idea/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+
+
+
+# OS
+.DS_StorA
