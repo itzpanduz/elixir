@@ -2,9 +2,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 import os
 
-print("🔍 Current working directory:", os.getcwd())
-print("📁 File exists?", os.path.exists("data/m_time_33125.csv"))
-
 
 # === Config ===
 SHIFT_BOUNDARY = datetime.strptime("6:30 PM", '%I:%M %p').time()
@@ -91,7 +88,7 @@ def read_and_prepare(file_path, location):
     return df
 
 
-def main():
+def get_clean_shift_data():
     # Load and clean both dataframes
     df_monroe = read_and_prepare(INPUT_FILES['Monroe'], 'Monroe')
     df_buford = read_and_prepare(INPUT_FILES['Buford'], 'Buford')
@@ -100,10 +97,13 @@ def main():
     df_combined = pd.concat([df_monroe, df_buford], ignore_index=True)
     df_processed = process_shifts(df_combined)
 
-    # Export
-    df_processed.to_excel(OUTPUT_FILE, index=False)
-    print(f"✅ Processed shift data written to: {OUTPUT_FILE}")
+    return df_processed
 
+
+def main():
+    df = get_clean_shift_()
+    df.to_excel(OUTPUT_FILE,index=False)
+    print(f"✅ Processed shift data written to: {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()

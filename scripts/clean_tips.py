@@ -35,20 +35,20 @@ def enrich_tip_rows(rows):
 
 
 # === Main Processing Function ===
-def process_tip_data():
-    # Read and clean both sets of data
+def get_clean_tip_data():
     rows_m = enrich_tip_rows(read_and_parse_tips(INPUT_FILES['Monroe']))
     rows_b = enrich_tip_rows(read_and_parse_tips(INPUT_FILES['Buford']))
-
     combined_rows = rows_m + rows_b
     df = pd.DataFrame(combined_rows)
+    return df
 
+def process_tip_data():
+    df = get_clean_tip_data()
     now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     output_path = f"{EXPORT_PREFIX}{now}.xlsx"
 
     df.to_excel(output_path, index=False)
     print(f"✅ Processed tip data written to: {output_path}")
-
 
 # === Entry Point ===
 if __name__ == "__main__":
