@@ -12,7 +12,6 @@ INPUT_FILES = {
 }
 OUTPUT_FILE = 'data/processed_shifts.xlsx'
 
-
 # === Shift Calculations ===
 def calculate_shift_a(row, shift_boundary):
     if pd.isna(row['CLOCKED IN']) or pd.isna(row['CLOCKED OUT']):
@@ -65,6 +64,8 @@ def process_shifts(df):
     df['time_out'] = df['CLOCKED OUT'].dt.strftime("%I:%M %p")
     df['shift_a'] = df.apply(calculate_shift_a, axis=1, args=(SHIFT_BOUNDARY,))
     df['shift_b'] = df.apply(calculate_shift_b, axis=1, args=(SHIFT_BOUNDARY,))
+    # we want create a new  row for each shift. the shift_a and shift_b columns will be the duration of the shift. this will go into the time_by_shift_df
+
     return df
 
 
@@ -101,7 +102,7 @@ def get_clean_shift_data():
 
 
 def main():
-    df = get_clean_shift_()
+    df = get_clean_shift_data()
     df.to_excel(OUTPUT_FILE,index=False)
     print(f"✅ Processed shift data written to: {OUTPUT_FILE}")
 

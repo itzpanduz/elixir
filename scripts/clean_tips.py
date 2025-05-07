@@ -31,6 +31,8 @@ def enrich_tip_rows(rows):
         row["12_time"] = parsed_dt.strftime("%I:%M %p")
         row["iso_dt"] = parsed_dt.isoformat()
         row["shift"] = "B" if parsed_dt.time() > SHIFT_CUTOFF else "A"
+
+        row["SHIFTNDATE"] = f"{parsed_dt.strftime('YYY-MM-DD')}_{row['shift']}"
     return rows
 
 
@@ -39,16 +41,32 @@ def get_clean_tip_data():
     rows_m = enrich_tip_rows(read_and_parse_tips(INPUT_FILES['Monroe']))
     rows_b = enrich_tip_rows(read_and_parse_tips(INPUT_FILES['Buford']))
     combined_rows = rows_m + rows_b
+
+    for row in combined_rows:
+        tip = row.get("TIP")
+        row["TIP"] = tip.replace("$", "").strip()
+        row["TIP"] = float(row["TIP"])
+        # convert date to datetime
+        date = row.get("date")
+        row["date"] = datetime.strptime(date, "%m/%d/%Y")
+
     df = pd.DataFrame(combined_rows)
     return df
 
 def process_tip_data():
     df = get_clean_tip_data()
-    now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    output_path = f"{EXPORT_PREFIX}{now}.xlsx"
 
-    df.to_excel(output_path, index=False)
-    print(f"✅ Processed tip data written to: {output_path}")
+    df = df.groupby(['date', 'shift']).agg(
+        total_tips=('TIP', 'sum'),
+        # total_a_tips=('TIP', lambda x: calculate_tips_by_shift(tips_df[tips_df['date'] == x.name], 'A')),
+        # total_b_tips=('TIP', lambda x: calculate_tips_by_shift(tips_df[tips_df['date'] == x.name], 'B'))
+    )
+    print(df)
+    # now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    # output_path = f"{EXPORT_PREFIX}{now}.xlsx"
+    #
+    # df.to_excel(output_path, index=False)
+    # print(f"✅ Processed tip data written to: {output_path}")
 
 # === Entry Point ===
 if __name__ == "__main__":
