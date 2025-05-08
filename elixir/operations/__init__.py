@@ -4,6 +4,7 @@
 # there will be a folder named data that will have sub folders for shits and tip named that respectively
 # we will have a class for each of these csvs to  parase the data using seperate mappied dictionaries
 
+from datetime import datetime
 import json
 from typing import TypedDict
 from elixir.quantic import QuanticTipCsvParser, QunanticShiftCsvParser, QuanticTipData, QunaticShiftData
@@ -21,6 +22,22 @@ class ElixirOperations:
         self.process_time()
         self.process_tips()
 
+
+    def get_workers(self, start_date_range:datetime| None =None, end_date_range: datetime | None = None) -> list[str]:
+        """Returns a unique list of workers on shifts
+        optional datetime range"""
+        # get a distinct list of workers on shifts
+        workers = []
+        for shift in self.shifts:
+            # skip if shift isn't in the date range
+            if start_date_range and shift.get("start_date") < start_date_range:
+                continue
+            if end_date_range and shift.get("end_date") > end_date_range:
+                continue
+            worker_name = f"{shift.get('first_name','')} {shift.get('last_name','')}"
+            workers.append(worker_name)
+
+        return list(set(workers))
 
     def get_csv_paths(self, csv_type: str = 'time'):
         # csv type is either time or tips

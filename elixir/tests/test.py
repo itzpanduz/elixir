@@ -17,8 +17,10 @@ monroe_ops = ElixirOperations(location="Monroe")
 all_tips = buford_ops.tips + monroe_ops.tips
 all_shifts = buford_ops.shifts + monroe_ops.shifts
 
-print(buford_ops.tips)
-print(buford_ops.shifts)
+
+
+users_during_shifts = buford_ops.get_workers()
+print(users_during_shifts)
 
 # tips_df = pd.DataFrame(all_tips)
 # shifts_df = pd.DataFrame(all_shifts)
